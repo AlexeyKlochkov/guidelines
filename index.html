@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Legal Copyrighting Guidelines</title>
+    <!-- Make sure the path to CKEditor is correct. -->
+    <script src="ckeditor/ckeditor.js"></script>
+    <script src="ckeditor/adapters/jquery.js"></script>
+    <script src="js/jquery-2.1.3.min.js"></script>
+</head>
+<body>
+<div id="content">
+
+</div>
+<input onclick="createEditor();" type="button" value="Add paragraph">
+<script>
+
+    CKEDITOR.disableAutoInline = true;
+
+    function createEditor() {
+        var sectionId=false;
+        $.ajax({
+            url: 'handler.php',
+            global: false,
+            type: "POST",
+            data: {request: "Add Section"},
+            dataType:"json",
+            success: function (result) {
+                if (result['sectionId']) {
+                    sectionId = result['sectionId'];
+                    if (sectionId) {
+                        $("#content").append('<div id=' + sectionId + ' contenteditable=true>Type new text here...</div>');
+                        CKEDITOR.inline(sectionId, {
+                            on: {
+                                blur: function (event) {
+
+                                    var params = {
+                                        request:"Save Section",
+                                        sectionHTML: event.editor.getData(),
+                                        sectionId:sectionId
+                                    };
+
+                                    $.ajax({
+                                        url: 'handler.php',
+                                        global: false,
+                                        type: "POST",
+                                        data: params,
+                                        dataType:"html",
+                                        success: function (result) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $.ajax({
+            url: 'handler.php',
+            global: false,
+            type: "POST",
+            data: {request: "Get All Sections"},
+            dataType: "json",
+            success: function (result) {
+                for (var section in result['sections']) {
+                    $("#content").append('<div id=' + result['sections'][section]['sectionId'] + ' contenteditable=true>' + result['sections'][section]['sectionHTML'] + '</div>');
+                }
+
+                $("div[contenteditable='true']").each(function () {
+                    var sectionId=$(this).attr("id");
+                    CKEDITOR.inline(sectionId, {
+                        on: {
+                            blur: function (event) {
+
+                                var params = {
+                                    request:"Save Section",
+                                    sectionHTML: event.editor.getData(),
+                                    sectionId:sectionId
+                                };
+
+                                $.ajax({
+                                    url: 'handler.php',
+                                    global: false,
+                                    type: "POST",
+                                    data: params,
+                                    dataType:"html",
+                                    success: function (result) {
+
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
+
