@@ -1,1 +1,1 @@
-# guidlaines
+# guidelines
