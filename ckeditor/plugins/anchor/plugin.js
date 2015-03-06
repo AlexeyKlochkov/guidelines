@@ -34,9 +34,7 @@ CKEDITOR.plugins.add( 'anchor', {
                  curType[editor.name]=result['curSectionKeywordId'];
                 }
             }});
-        editor.addCommand( 'anchor', new CKEDITOR.dialogCommand( 'anchor',{
 
-        } ) );
         editor.ui.addButton( 'anchor', {
             label: 'Add keywords',
             command: 'anchor',
@@ -57,7 +55,7 @@ CKEDITOR.plugins.add( 'anchor', {
                                 id: 'type',
                                 label: 'Type of keyword',
                                 items:types,
-                                default:2,
+                                default:1,
                                 validate: CKEDITOR.dialog.validate.notEmpty( "Type field cannot be empty." )
                             },
                             {
@@ -67,7 +65,6 @@ CKEDITOR.plugins.add( 'anchor', {
                                 validate: CKEDITOR.dialog.validate.notEmpty( "Value field cannot be empty." )
                             }
                         ]
-
                     },
                     {
                         id: 'tab-adv',
