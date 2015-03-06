@@ -32,13 +32,11 @@
                         CKEDITOR.inline(sectionId, {
                             on: {
                                 blur: function (event) {
-
                                     var params = {
                                         request:"Save Section",
                                         sectionHTML: event.editor.getData(),
                                         sectionId:sectionId
                                     };
-
                                     $.ajax({
                                         url: 'handler.php',
                                         global: false,
@@ -46,7 +44,6 @@
                                         data: params,
                                         dataType:"html",
                                         success: function (result) {
-
                                         }
                                     });
                                 }
@@ -69,19 +66,16 @@
                 for (var section in result['sections']) {
                     $("#content").append('<div id=' + result['sections'][section]['sectionId'] + ' contenteditable=true>' + result['sections'][section]['sectionHTML'] + '</div>');
                 }
-
                 $("div[contenteditable='true']").each(function () {
                     var sectionId=$(this).attr("id");
                     CKEDITOR.inline(sectionId, {
                         on: {
                             blur: function (event) {
-
                                 var params = {
                                     request:"Save Section",
                                     sectionHTML: event.editor.getData(),
                                     sectionId:sectionId
                                 };
-
                                 $.ajax({
                                     url: 'handler.php',
                                     global: false,

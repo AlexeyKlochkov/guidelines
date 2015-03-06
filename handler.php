@@ -25,6 +25,21 @@ if (isset($_POST["request"])){
             echo (json_encode($sectionId));
             break;
         }
+        case "Get Section Types":{
+            $sectionType=Lgc::getSectionType();
+            echo (json_encode($sectionType));
+            break;
+        }
+        case "Get Current Section Type":{
+            $sectionType=Lgc::getCurSectionType($_POST["sectionId"]);
+            echo (json_encode($sectionType));
+            break;
+        }
+        case "Save Anchor":{
+            $sectionType=Lgc::saveAnchor($_POST["id"],$_POST["sectionId"],$_POST["anchorValue"]);
+            echo (json_encode($sectionType));
+            break;
+        }
         default:{
             break;
         }

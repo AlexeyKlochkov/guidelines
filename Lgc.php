@@ -166,4 +166,55 @@ class Lgc {
             $result["success"]=false;
         return $result;
     }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public static function getCurSectionType($id) {
+        $db = Lgc::connect();
+        if ($stmt = $db->prepare("SELECT section_type_id,name FROM anchor where section_id=:id")) {
+            $stmt->bindValue(":id",$id,PDO::PARAM_INT);
+            $stmt->bindColumn('name', $name, PDO::PARAM_STR);
+            $stmt->bindColumn('section_type_id', $type, PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                $result["success"] = true;
+                while ($row = $stmt->fetch(PDO::FETCH_BOUND)) {
+                    $result["curSectionKeywordId"]=$type;
+                    $result["curSectionKeywordName"]=$name;
+                }
+            } else
+                $result["success"] = false;
+        } else
+            $result["success"] = false;
+        return $result;
+    }
+
+    /**
+     * @param $id
+     * @param $sectionId
+     * @param $value
+     * @return mixed
+     */
+    public static function saveAnchor($id,$sectionId,$value){
+        $db = Lgc::connect();
+        if ($stm = $db->prepare("INSERT IGNORE INTO anchor (section_id,section_type_id,name) VALUES (:id,:sectionId,:value)")){
+            $stm->bindValue(":id",$id,PDO::PARAM_INT);
+            $stm->bindValue(":sectionId",$sectionId,PDO::PARAM_INT);
+            $stm->bindValue(":value",$value,PDO::PARAM_STR);
+            if ($stm->execute()) {
+
+                $result["success"]=true;
+            }
+            else {
+                $result["success"]=false;
+                $result["reason"]="Cannot insert into DB";
+            }
+        }
+        else {
+            $result["success"]=false;
+            $result["reason"]="DB connection problem";
+        }
+        return $result;
+    }
 }
