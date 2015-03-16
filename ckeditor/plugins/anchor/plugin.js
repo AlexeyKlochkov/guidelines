@@ -6,7 +6,7 @@ CKEDITOR.plugins.add( 'anchor', {
     requires:'dialog',
     init: function( editor ) {
         var types;
-        var curType=new Array;
+        var curType=Array;
         $.ajax({
             url: 'handler.php',
             global: false,
@@ -61,26 +61,15 @@ CKEDITOR.plugins.add( 'anchor', {
                             {
                                 type: 'text',
                                 id: 'name',
-                                label: 'Value',
+                                label: 'Keyword',
                                 validate: CKEDITOR.dialog.validate.notEmpty( "Value field cannot be empty." )
-                            }
-                        ]
-                    },
-                    {
-                        id: 'tab-adv',
-                        label: 'Advanced',
-                        elements: [
-                            {
-                                type: 'text',
-                                id: 'id',
-                                label: 'Id'
                             }
                         ]
                     }
                 ],
                 onShow : function()
                 {
-                    var curType=new Array;
+                    var curType=Array;
                     $.ajax({
                         url: 'handler.php',
                         global: false,
@@ -91,7 +80,6 @@ CKEDITOR.plugins.add( 'anchor', {
                         success: function (result) {
                             if (result['curSectionKeywordId']!=undefined && result!='') {
                                 curType[editor.name]=result['curSectionKeywordName'];
-                                console.log(curType);
                                 CKEDITOR.dialog.getCurrent().getContentElement('tab-basic','type').setValue(result['curSectionKeywordId']);
                                 CKEDITOR.dialog.getCurrent().setValueOf('tab-basic','name',curType[editor.name]);
                             }
