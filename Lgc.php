@@ -94,11 +94,11 @@ class Lgc {
         $sections=$array["content"];
         $keyword=$array["keyword"];
         if (!is_null($sections)) {
-            $where = "SELECT section_id FROM anchor WHERE ";
+            $where = "SELECT DISTINCT section_id FROM anchor WHERE ";
             $first = 0;
             foreach ($sections as $key => $value) {
                 $list = implode("','", $value);
-                if ($first) $where .= " AND ";
+                if ($first) $where .= " OR ";
                 $where .= "(section_type_id=" . $key . " AND name in ('" . $list . "'))";
                 $first = 1;
             }
@@ -114,7 +114,6 @@ class Lgc {
         else $keyword="";
         $db = Lgc::connect();
         $i=0;
-
         if ($stmt = $db->prepare("SELECT s.id,s.html FROM section s ".$where.$keyword)) {
             $stmt->bindColumn('id', $sectionId, PDO::PARAM_INT);
             $stmt->bindColumn('html', $sectionHTML, PDO::PARAM_STR);
