@@ -87,6 +87,80 @@ class Lgc {
             $result["success"] = false;
         return $result;
     }
+    /**
+     * @return mixed
+     */
+    public static function getSectionBySearch($array){
+        $sections=$array["content"];
+        $keyword=$array["keyword"];
+        if (!is_null($sections)) {
+            $where = "SELECT section_id FROM anchor WHERE ";
+            $first = 0;
+            foreach ($sections as $key => $value) {
+                $list = implode("','", $value);
+                if ($first) $where .= " AND ";
+                $where .= "(section_type_id=" . $key . " AND name in ('" . $list . "'))";
+                $first = 1;
+            }
+            $where = "WHERE s.id in (" . $where . ") ";
+        }
+        else $where="";
+        if ($keyword!="" && $where!=""){
+            $keyword=" AND s.html LIKE '%".$keyword."%'";
+        }
+        elseif ($keyword!=""){
+            $keyword="WHERE s.html LIKE '%".$keyword."%'";
+        }
+        else $keyword="";
+        $db = Lgc::connect();
+        $i=0;
+
+        if ($stmt = $db->prepare("SELECT s.id,s.html FROM section s ".$where.$keyword)) {
+            $stmt->bindColumn('id', $sectionId, PDO::PARAM_INT);
+            $stmt->bindColumn('html', $sectionHTML, PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                while ($row = $stmt->fetch(PDO::FETCH_BOUND)) {
+                    $result["sections"][$i]["sectionId"] = $sectionId;
+                    $result["sections"][$i]["sectionHTML"] = $sectionHTML;
+                    $i++;
+                }
+                if ($i>0) {
+                    $result["success"] = true;
+                }
+                else{
+                    $result["success"]=false;
+                }
+            } else
+                $result["success"] = false;
+        } else
+            $result["success"] = false;
+        return $result;
+    }
+    /**
+     * @return mixed
+     */
+    public static function getSectionByType(){
+        $db = Lgc::connect();
+        $i=0;
+        if ($stmt = $db->prepare("SELECT DISTINCT a.name as anchor,st.name as sectionName,a.section_type_id as sectionTypeId FROM anchor a INNER JOIN section_type st on a.section_type_id=st.id order by st.name")) {
+
+            $stmt->bindColumn('sectionTypeId', $sectionTypeId, PDO::PARAM_INT);
+            $stmt->bindColumn('anchor', $anchor, PDO::PARAM_STR);
+            $stmt->bindColumn('sectionName', $section, PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                $result["success"] = true;
+                while ($row = $stmt->fetch(PDO::FETCH_BOUND)) {
+                    $result["sections"][$section]["sectionName"] = $section;
+                    $result["sections"][$section]["sectionTypeId"] = $sectionTypeId;
+                    $result["sections"][$section]["anchor"][] = $anchor;
+                    $i++;
+                }
+            } else
+                $result["success"] = false;
+        } else
+            $result["success"] = false;
+        return $result;
+    }
 
     /**
      * @param $sectionid
