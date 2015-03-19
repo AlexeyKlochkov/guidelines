@@ -12,6 +12,9 @@ body {
     padding-right: 0;
     padding-top: 0px;
 }
+#content {
+     border:1px solid #ddd;
+ }
 #sidebar .nav {
     width: 95%;
 }
