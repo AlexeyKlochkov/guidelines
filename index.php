@@ -6,8 +6,10 @@
     <script src="ckeditor/ckeditor.js"></script>
     <script src="ckeditor/adapters/jquery.js"></script>
     <script src="js/jquery-2.1.3.min.js"></script>
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
+<h1 style="margin-left:40%;">Legal Copywriting Guidelines</h1>
 <div id="content">
     <?php
     session_start();

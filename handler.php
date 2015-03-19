@@ -36,7 +36,15 @@ if (isset($_POST["request"])){
             break;
         }
         case "Save Anchor":{
-            $sectionType=Lgc::saveAnchor($_POST["id"],$_POST["sectionId"],$_POST["anchorValue"]);
+            $sectionType=false;
+            if ($_POST["region"]!="")
+                $sectionType=Lgc::saveAnchor($_POST["id"],1,$_POST["region"]);
+            if ($_POST["media"]!="")
+                $sectionType=Lgc::saveAnchor($_POST["id"],3,$_POST["media"]);
+            if ($_POST["program"]!="")
+                $sectionType=Lgc::saveAnchor($_POST["id"],2,$_POST["program"]);
+            if ($_POST["chanel"]!="")
+                $sectionType=Lgc::saveAnchor($_POST["id"],4,$_POST["chanel"]);
             echo (json_encode($sectionType));
             break;
         }

@@ -24,9 +24,13 @@
 <body>
 <div id="content">
     <h1>Search form</h1>
+    <?php if (isset($_GET["e"]) && $_GET["e"]==1):?>
     <div class="alert alert-danger" role="alert">No search result!</div>
+    <?endif;?>
     <form method="POST" action = "index.php" class="form-signin">
-
+            <div class="input-group">
+                <label for="keyword">Keyword</label><input class="form-control" name="keyword" id="keyword" type="text">
+            </div>
     <?php
          session_start();
         require_once("Lgc.php");
@@ -35,12 +39,12 @@
             echo '<div><label for='.$value["sectionTypeId"].'>'.$key.': </label><select class="js-example-basic-single form-control" name=content['.$value["sectionTypeId"].'][] id='.$value["sectionTypeId"].' multiple>';
             $i++;
             foreach ($value["anchor"] as $val) {
-                    echo '<option value='.$val.' label='.$val.'>'.$val.'</option>';
+                    echo "<option value='".$val."' label='".$val."'>".$val."</option>";
                 }
             echo "</select></div>";
         }
     ?>
-        <div><label for="keyword">Keyword</label><input class="form-control" name="keyword" id="keyword" type="text"></div>
+
         <br>
         <input type="hidden" name="search" value="submited">
         <button class="btn btn-primary" type="submit">Search</button>  <a href="index.php">Show full list</a>

@@ -2,7 +2,7 @@
 /**
  * Created by PhpStorm.
  * User: aklochko
- * Date: 2/11/15
+ * Date: 2/11/15'ceT6b)dFxt6p'
  * Time: 9:44 AM
  */
 date_default_timezone_set('America/Los_Angeles');
@@ -90,18 +90,55 @@ class Lgc {
     /**
      * @return mixed
      */
+    private static function getSectionIdByType($type,$value){
+        $db = Lgc::connect();
+        if ($stmt = $db->prepare("SELECT DISTINCT section_id FROM anchor WHERE (section_type_id=:type AND name in ($value))")) {
+            $stmt->bindValue(':type', $type, PDO::PARAM_INT);
+            $stmt->bindColumn('section_id', $sectionId, PDO::PARAM_INT);
+            if ($stmt->execute()) {
+                $result["success"] = true;
+                while ($row = $stmt->fetch(PDO::FETCH_BOUND)) {
+                    $result["sections"][] = $sectionId;
+                }
+            } else
+                $result["success"] = false;
+        } else
+            $result["success"] = false;
+        return $result;
+    }
+
+    /**
+     * @return mixed
+     */
     public static function getSectionBySearch($array){
         $sections=$array["content"];
         $keyword=$array["keyword"];
+        $i=0;
         if (!is_null($sections)) {
             $where = "SELECT DISTINCT section_id FROM anchor WHERE ";
-            $first = 0;
             foreach ($sections as $key => $value) {
-                $list = implode("','", $value);
-                if ($first) $where .= " OR ";
-                $where .= "(section_type_id=" . $key . " AND name in ('" . $list . "'))";
-                $first = 1;
+                $list="'";
+                $list .= implode("','", $value);
+                $list .="'";
+                $section[]=LGC::getSectionIdByType($key,$list);
+                $i++;
             }
+            $result=Array();
+            foreach ($section as $item){
+                foreach($item["sections"] as $v) {
+                    array_push($result,$v);
+                }
+            }
+            $tmp=array_count_values($result);
+            $final=Array();
+
+            foreach($tmp as $key=>$value){
+                if ($value==$i){
+                    array_push($final,$key);
+                }
+            }
+
+            $where = implode(",", $final);
             $where = "WHERE s.id in (" . $where . ") ";
         }
         else $where="";
@@ -253,8 +290,7 @@ class Lgc {
             if ($stmt->execute()) {
                 $result["success"] = true;
                 while ($row = $stmt->fetch(PDO::FETCH_BOUND)) {
-                    $result["curSectionKeywordId"]=$type;
-                    $result["curSectionKeywordName"]=$name;
+                    $result[$type]=$name;
                 }
             } else
                 $result["success"] = false;
@@ -271,7 +307,9 @@ class Lgc {
      */
     public static function saveAnchor($id,$sectionId,$value){
         $db = Lgc::connect();
-        if ($stm = $db->prepare("INSERT IGNORE INTO anchor (section_id,section_type_id,name) VALUES (:id,:sectionId,:value)")){
+
+        if ($stm = $db->prepare("INSERT INTO anchor (section_id,section_type_id,name) VALUES (:id,:sectionId,:value)
+                                 ON DUPLICATE KEY UPDATE section_id=:id, section_type_id=:sectionId, name=:value")){
             $stm->bindValue(":id",$id,PDO::PARAM_INT);
             $stm->bindValue(":sectionId",$sectionId,PDO::PARAM_INT);
             $stm->bindValue(":value",$value,PDO::PARAM_STR);
