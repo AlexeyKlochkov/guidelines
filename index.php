@@ -32,7 +32,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="#">Index</a>
+                    <a href="index.php?show_index=1">Index</a>
                 </li>
                 <li>
                     <a href="#">Settings</a>
@@ -76,24 +76,35 @@
             if (!isset($_SESSION["username"])){
                 header('Location:signin.html');
             }
-            if (isset($_POST["search"])){
+            if (isset($_POST["search"]) && !isset($_GET["show_index"])){
                 $sections = LGC::getSectionBySearch($_POST);
                 if ($sections["success"]) {
                     foreach ($sections["sections"] as $section) {
                         if ($_SESSION["isAdmin"]) $contenteditable = "contenteditable=true";
                         else $contenteditable = "";
-                        echo '<div id=' . $section['sectionId'] . ' ' . $contenteditable . '>' . $section['sectionHTML'] . '</div>';
+                        echo '<hr><div id=' . $section['sectionId'] . ' ' . $contenteditable . '>' . $section['sectionHTML'] . '</div><hr>';
                     }
                 }else {
                     header ("Location:search.php?e=1");
                 }
             }
             else {
+                if (isset($_GET["show_index"]) && $_GET["show_index"]==1){
+                    $indexes=LGC::getIndexes();
+                    echo "<h2>Indexes:</h2>";
+                    echo "<ol>";
+                    foreach ($indexes["indexes"] as $index){
+                        foreach ($index as $value) {
+                            echo "<a href='#$value'><li>$value</li></a>";
+                       }
+                    }
+                    echo "</ol>";
+                }
                 $sections = LGC::getAllSections();
                 foreach ($sections["sections"] as $section) {
                     if ($_SESSION["isAdmin"]) $contenteditable="contenteditable=true";
                     else $contenteditable="";
-                    echo '<div id=' . $section['sectionId'] . ' '.$contenteditable.'>' . $section['sectionHTML'] . '</div>';
+                    echo '<hr><div id=' . $section['sectionId'] . ' '.$contenteditable.'>' . $section['sectionHTML'] . '</div><hr>';
                 }
             }
             ?>
@@ -116,7 +127,7 @@
                 if (result['sectionId']) {
                     sectionId = result['sectionId'];
                     if (sectionId) {
-                        $("#content").prepend('<div id=' + sectionId + ' contenteditable=true><hr>Type new text here...<hr></div>');
+                        $("#content").prepend('<hr><div id=' + sectionId + ' contenteditable=true>Type new text here...</div><hr>');
                         $('#'+sectionId).focus();
                         CKEDITOR.inline(sectionId, {
                             on: {

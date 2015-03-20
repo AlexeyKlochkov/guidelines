@@ -20,6 +20,11 @@ if (isset($_POST["request"])){
             echo (json_encode($result));
             break;
         }
+        case "Save Index":{
+            $result["success"]=Lgc::saveIndex($_POST["sectionId"],$_POST["name"]);
+            echo (json_encode($result));
+            break;
+        }
         case "Add Section":{
             $sectionId=Lgc::addSection(-1);
             echo (json_encode($sectionId));
@@ -35,6 +40,7 @@ if (isset($_POST["request"])){
             echo (json_encode($sectionType));
             break;
         }
+
         case "Save Anchor":{
             $sectionType=false;
             if ($_POST["region"]!="")

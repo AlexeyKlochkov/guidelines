@@ -298,6 +298,22 @@ class Lgc {
             $result["success"] = false;
         return $result;
     }
+    public static function getIndexes() {
+        $db = Lgc::connect();
+        if ($stmt = $db->prepare("SELECT section_id,name FROM indexes order by name")) {
+            $stmt->bindColumn('name', $name, PDO::PARAM_STR);
+            $stmt->bindColumn('section_id', $sectionId, PDO::PARAM_INT);
+            if ($stmt->execute()) {
+                $result["success"] = true;
+                while ($row = $stmt->fetch(PDO::FETCH_BOUND)) {
+                    $result["indexes"][$sectionId][]=$name;
+                }
+            } else
+                $result["success"] = false;
+        } else
+            $result["success"] = false;
+        return $result;
+    }
 
     /**
      * @param $id
@@ -313,6 +329,29 @@ class Lgc {
             $stm->bindValue(":id",$id,PDO::PARAM_INT);
             $stm->bindValue(":sectionId",$sectionId,PDO::PARAM_INT);
             $stm->bindValue(":value",$value,PDO::PARAM_STR);
+            if ($stm->execute()) {
+
+                $result["success"]=true;
+            }
+            else {
+                $result["success"]=false;
+                $result["reason"]="Cannot insert into DB";
+            }
+        }
+        else {
+            $result["success"]=false;
+            $result["reason"]="DB connection problem";
+        }
+        return $result;
+    }
+
+    public static function saveIndex($sectionId,$name){
+        $db = Lgc::connect();
+
+        if ($stm = $db->prepare("INSERT INTO indexes (section_id,name) VALUES (:sectionId,:name)
+                                 ON DUPLICATE KEY UPDATE name=:name")){
+            $stm->bindValue(":sectionId",$sectionId,PDO::PARAM_INT);
+            $stm->bindValue(":name",$name,PDO::PARAM_STR);
             if ($stm->execute()) {
 
                 $result["success"]=true;
